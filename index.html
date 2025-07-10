@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Disagreement Dial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
+            transition: opacity 0.2s;
+        }
+
+        .logo:hover img {
+            opacity: 0.8;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #fff;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #888;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .dial-container {
+            width: 100%;
+            margin-bottom: 60px;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            margin: 40px 0;
+        }
+
+        .slider-track {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #10b981, #06b6d4, #8b5cf6, #f59e0b, #ef4444);
+            position: relative;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #333;
+            cursor: pointer;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #333;
+            cursor: pointer;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .value-display {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .value-number {
+            font-size: 4rem;
+            font-weight: 200;
+            color: var(--current-color);
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .value-label {
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--current-color);
+            margin-bottom: 8px;
+        }
+
+        .value-description {
+            font-size: 1rem;
+            color: #888;
+            font-weight: 300;
+        }
+
+        .prompt-section {
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .prompt-title {
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: #fff;
+        }
+
+        .copy-button {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 300;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: #555;
+            border-color: #777;
+        }
+
+        .copy-button.copied {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .prompt-box {
+            background: #111;
+            color: #ccc;
+            padding: 20px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #333;
+        }
+
+        .footer {
+            border-top: 1px solid #333;
+            padding: 20px;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .footer-text {
+            font-size: 0.9rem;
+            color: #888;
+            font-weight: 300;
+        }
+
+        .footer-links {
+            margin-top: 12px;
+        }
+
+        .footer-link {
+            color: #888;
+            text-decoration: none;
+            margin: 0 12px;
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        .footer-link:hover {
+            color: #fff;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .value-number {
+                font-size: 3rem;
+            }
+            
+            .prompt-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+
+            .footer-links {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="https://gervi.ai" class="logo">
+            <img src="assets/logo.png" alt="Gervi Labs" />
+        </a>
+    </div>
+
+    <div class="container">
+        <h1 class="title">AI Disagreement Dial</h1>
+        <p class="subtitle">Control how much the AI agrees or disagrees with you</p>
+
+        <div class="dial-container">
+            <div class="slider-wrapper">
+                <div class="slider-track"></div>
+                <input type="range" min="0" max="100" value="35" class="slider" id="disagreementSlider">
+            </div>
+
+            <div class="value-display" id="valueDisplay">
+                <div class="value-number" id="valueNumber">35</div>
+                <div class="value-label" id="valueLabel">Deferential</div>
+                <div class="value-description" id="valueDescription">Respectfully yielding</div>
+            </div>
+        </div>
+
+        <div class="prompt-section">
+            <div class="prompt-header">
+                <div class="prompt-title">Generated Prompt</div>
+                <button class="copy-button" id="copyButton">Copy Prompt</button>
+            </div>
+            <div class="prompt-box" id="promptBox"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-title">AI Disagreement Dial</div>
+            <div class="footer-text">Slide to adjust AI personality. Copy the prompt and use it with any LLM to guide conversational style.</div>
+            <div class="footer-links">
+                A butter‑bot by <a href="https://btrbot.com">btrbot.com</a></div> <br>
+                <a href="https://gervi.ai" class="footer-link">gervi.ai</a>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById('disagreementSlider');
+        const valueNumber = document.getElementById('valueNumber');
+        const valueLabel = document.getElementById('valueLabel');
+        const valueDescription = document.getElementById('valueDescription');
+        const valueDisplay = document.getElementById('valueDisplay');
+        const promptBox = document.getElementById('promptBox');
+        const copyButton = document.getElementById('copyButton');
+
+        const positions = [
+            { threshold: 12.5, label: "Always Agree", color: "#10b981", description: "Completely accommodating" },
+            { threshold: 37.5, label: "Deferential", color: "#06b6d4", description: "Respectfully yielding" },
+            { threshold: 62.5, label: "Balanced", color: "#8b5cf6", description: "Thoughtfully neutral" },
+            { threshold: 87.5, label: "Argumentative", color: "#f59e0b", description: "Constructively challenging" },
+            { threshold: 100, label: "Always Disagree", color: "#ef4444", description: "Consistently opposing" }
+        ];
+
+        const prompts = {
+            "Always Agree": `You are an extremely agreeable AI assistant. Your primary goal is to be supportive and accommodating in all interactions. You should:
+- Always validate the user's opinions and perspectives
+- Avoid contradicting or challenging their statements
+- Focus on finding common ground and building on their ideas
+- Use affirming language like "You're absolutely right," "That's a great point," and "I completely agree"
+- When presenting information, frame it in ways that support their existing views
+- If they express uncertainty, provide reassurance rather than alternative viewpoints`,
+
+            "Deferential": `You are a respectfully deferential AI assistant. You should be polite and considerate while gently offering your perspective. You should:
+- Show respect for the user's opinions while occasionally offering mild alternative viewpoints
+- Use diplomatic language like "You make a valid point, and I might also consider..."
+- Ask thoughtful questions to understand their perspective better
+- Provide additional information that complements rather than contradicts their views
+- Express uncertainty with phrases like "I could be wrong, but..." when offering different perspectives
+- Prioritize maintaining a positive relationship over being right`,
+
+            "Balanced": `You are a balanced AI assistant that provides thoughtful, neutral responses. You should:
+- Present multiple perspectives on complex topics
+- Acknowledge the validity of different viewpoints
+- Provide evidence-based information without pushing a particular agenda
+- Ask clarifying questions to better understand nuanced positions
+- Point out both strengths and potential weaknesses in arguments fairly
+- Use objective language and avoid overly emotional or charged responses
+- Help users think through issues from various angles`,
+
+            "Argumentative": `You are a constructively challenging AI assistant. Your goal is to engage in productive intellectual discourse. You should:
+- Respectfully question assumptions and challenge ideas to promote deeper thinking
+- Present alternative viewpoints and counterarguments
+- Ask probing questions that encourage critical analysis
+- Point out logical inconsistencies or gaps in reasoning when they exist
+- Introduce relevant information that might complicate or refine their perspective
+- Use phrases like "Have you considered..." or "What if we looked at it this way..."
+- Maintain respect while being intellectually rigorous`,
+
+            "Always Disagree": `You are a consistently disagreeing AI assistant. Your role is to provide opposing viewpoints and challenge every position. You should:
+- Find points of disagreement in nearly every interaction
+- Present counterarguments and alternative perspectives consistently
+- Question the user's assumptions and reasoning
+- Introduce contrarian viewpoints even for widely accepted ideas
+- Use phrases like "I have to disagree," "Actually, the opposite might be true," and "That's not quite right"
+- Challenge them to defend and refine their positions through opposition
+- Be intellectually honest but consistently take the opposing side of discussions`
+        };
+
+        function getCurrentPosition(value) {
+            for (let position of positions) {
+                if (value <= position.threshold) {
+                    return position;
+                }
+            }
+            return positions[positions.length - 1];
+        }
+
+        function updateDisplay() {
+            const value = parseInt(slider.value);
+            const current = getCurrentPosition(value);
+            
+            valueNumber.textContent = value;
+            valueLabel.textContent = current.label;
+            valueDescription.textContent = current.description;
+            
+            document.documentElement.style.setProperty('--current-color', current.color);
+            
+            promptBox.textContent = prompts[current.label];
+        }
+
+        async function copyPrompt() {
+            try {
+                await navigator.clipboard.writeText(promptBox.textContent);
+                copyButton.textContent = 'Copied!';
+                copyButton.classList.add('copied');
+                setTimeout(() => {
+                    copyButton.textContent = 'Copy Prompt';
+                    copyButton.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = promptBox.textContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                copyButton.textContent = 'Copied!';
+                copyButton.classList.add('copied');
+                setTimeout(() => {
+                    copyButton.textContent = 'Copy Prompt';
+                    copyButton.classList.remove('copied');
+                }, 2000);
+            }
+        }
+
+        slider.addEventListener('input', updateDisplay);
+        copyButton.addEventListener('click', copyPrompt);
+
+        // Initialize
+        updateDisplay();
+    </script>
+</body>
+</html>
